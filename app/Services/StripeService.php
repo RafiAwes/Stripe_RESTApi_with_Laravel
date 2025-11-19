@@ -19,10 +19,14 @@ class StripeService
     public function createConnectedAccount(array $accountData): ?Account 
     {
         try {
-            $account = new Account();
-            $account->type = 'express';
-            $account->email = $accountData['email'];
-            $account->save();
+            $account = Account::Create([
+                'type' => 'express',
+                'email' => $accountData['email'],
+                'capabilities' => [
+                    'card_payments' => ['requested' => true],
+                    'transfers' => ['requested' => true],
+                ],
+            ]);;
             return $account;
             
         }
@@ -34,12 +38,12 @@ class StripeService
     public function createAccountLink(string $accountId, string $refreshUrl, string $returnUrl): ?AccountLink 
     {
         try {
-            $accountLink = new AccountLink();
-            $accountLink->account = $accountId;
-            $accountLink->refresh_url = $refreshUrl;
-            $accountLink->return_url = $returnUrl;
-            $accountLink->type = 'account_onboarding';
-            $accountLink->save();
+            $accountLink = AccountLink::create([
+                'account' => $accountId,
+                'refresh_url' => $refreshUrl,
+                'return_url' => $returnUrl,
+                'type' => 'account_onboarding',
+            ]);
             return $accountLink;
         }
         catch (ApiErrorException $e) {
@@ -50,14 +54,22 @@ class StripeService
     public function createPaymentIntent(int $amount, string $currency, array $metadata, string $idempotencyKey): ?PaymentIntent 
     {
         try {
-            $paymentIntent = new PaymentIntent();
-            $paymentIntent->amount = $amount;
-            $paymentIntent->currency = $currency;
-            $paymentIntent->payment_method_types = $paymentMethodTypes;
-            $paymentIntent->metadata = $metadata;
-            $paymentIntent->idempotency_key = $idempotencyKey;
-            $paymentIntent->save();
-            return $paymentIntent;
+            $paymentIntent = PaymentIntent::create([
+                'amount' => $amount,
+                'currency' => $currency,
+                'payment_method_types' => ['card'],
+                'metadata' => $metadata,
+            ], [
+                'idempotency_key' => $idempotencyKey,
+            ]);
+            // $paymentIntent = new PaymentIntent();
+            // $paymentIntent->amount = $amount;
+            // $paymentIntent->currency = $currency;
+            // $paymentIntent->payment_method_types = $paymentMethodTypes;
+            // $paymentIntent->metadata = $metadata;
+            // $paymentIntent->idempotency_key = $idempotencyKey;
+            // $paymentIntent->save();
+            // return $paymentIntent;
         }
         catch (ApiErrorException $e) {
             throw new Exception('Stripe API Error: ' . $e->getMessage());
