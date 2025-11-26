@@ -62,14 +62,7 @@ class StripeService
             ], [
                 'idempotency_key' => $idempotencyKey,
             ]);
-            // $paymentIntent = new PaymentIntent();
-            // $paymentIntent->amount = $amount;
-            // $paymentIntent->currency = $currency;
-            // $paymentIntent->payment_method_types = $paymentMethodTypes;
-            // $paymentIntent->metadata = $metadata;
-            // $paymentIntent->idempotency_key = $idempotencyKey;
-            // $paymentIntent->save();
-            // return $paymentIntent;
+            
         }
         catch (ApiErrorException $e) {
             throw new Exception('Stripe API Error: ' . $e->getMessage());

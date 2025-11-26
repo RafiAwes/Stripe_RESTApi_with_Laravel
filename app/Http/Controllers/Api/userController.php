@@ -63,7 +63,7 @@ class userController extends Controller
     // create stripe account
     public function createAccount(Request $request)
     {
-        response()->json(['message' => 'Creating Stripe connected account'], 200);
+        // response()->json(['message' => 'Creating Stripe connected account'], 200);
         $account = $this->stripe->createConnectedAccount([
             'email' => $request->input('email'),
         ]);
